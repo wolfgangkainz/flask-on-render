@@ -1,9 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Flask App</title>
+    <title>Kasi's Bio Fertili</title>
 </head>
 <body>
-    <h1>Hello from Flask using Templates!</h1>
+    <h1>Hello, welcome to Kasi's Bio Fertili website</h1>
+    <h2>Order Form</h2>
+
+    <form action="/submit" method="post">
+        <label for="name">Name:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label for="product">Select Products (hold Ctrl to select multiple):</label><br>
+        <select name="products" multiple size="10">
+            <option value="Unicorn Compost - $12">Unicorn Compost - $12</option>
+            <option value="Dragon Dung Deluxe - $25">Dragon Dung Deluxe - $25</option>
+            <option value="Phoenix Phosphate - $18">Phoenix Phosphate - $18</option>
+            <option value="Goblin Growth - $22">Goblin Growth - $22</option>
+            <option value="Worm Wizard - $15">Worm Wizard - $15</option>
+            <option value="Fungal Frenzy - $20">Fungal Frenzy - $20</option>
+            <option value="Bat Boost - $16">Bat Boost - $16</option>
+            <option value="Elf Enrichment - $19">Elf Enrichment - $19</option>
+            <option value="Moss Magic - $14">Moss Magic - $14</option>
+            <option value="Zombie Zeal - $21">Zombie Zeal - $21</option>
+        </select><br><br>
+
+        <label for="quantity">How many bags?</label><br>
+        <input type="number" name="quantity" min="1" required><br><br>
+
+        <input type="submit" value="Send Order">
+    </form>
 </body>
 </html>
