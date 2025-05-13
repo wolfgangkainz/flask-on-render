@@ -11,18 +11,24 @@ def home():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    name = request.form['name']
-    customer_email = request.form['email']
-    product = request.form['product']
-    quantity = int(request.form['quantity'])
+    # Ensure the request is a proper POST
+    if request.method != 'POST':
+        return "<h1>Invalid request method</h1>", 405
 
-    # Extract price from product string
-    product_name, price_str = product.rsplit(" - $", 1)
-    price = float(price_str)
-    total = price * quantity
+    try:
+        # Collect form data
+        name = request.form['name']
+        customer_email = request.form['email']
+        product = request.form['product']
+        quantity = int(request.form['quantity'])
 
-    # Compose email content
-    body = f"""\
+        # Extract price from product string
+        product_name, price_str = product.rsplit(" - $", 1)
+        price = float(price_str)
+        total = price * quantity
+
+        # Compose email content
+        body = f"""\
 New Order from Kasi's Bio Fertili
 
 Customer Name: {name}
@@ -34,20 +40,22 @@ Unit Price: ${price:.2f}
 Total Amount: ${total:.2f}
 """
 
-    msg = MIMEText(body)
-    msg['Subject'] = f"Fertilizer Order from {name}"
-    msg['From'] = os.environ["EMAIL_USER"]
-    msg['To'] = "wkainzat@gmail.com"  # 🔁 Updated recipient address here
+        msg = MIMEText(body)
+        msg['Subject'] = f"Fertilizer Order from {name}"
+        msg['From'] = os.environ["EMAIL_USER"]
+        msg['To'] = "wkainzat@gmail.com"
 
-    try:
+        # Send the email
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
         server.login(os.environ["EMAIL_USER"], os.environ["EMAIL_PASS"])
         server.send_message(msg)
         server.quit()
+
         return "<h1>Order submitted! Thank you.</h1>"
+
     except Exception as e:
-        return f"<h1>Error sending email: {str(e)}</h1>"
+        return f"<h1>Form submission error: {str(e)}</h1>", 400
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
