@@ -15,7 +15,7 @@ def submit():
     products = request.form.getlist("products")
     quantity = request.form.get("quantity")
 
-    message = f"""\
+    message = f"""\ 
 Subject: New Fertilizer Order from {name}
 
 Name: {name}
@@ -35,3 +35,8 @@ Quantity: {quantity} bag(s)
         return f"<h1>Error sending email: {str(e)}</h1>"
 
     return "<h1>Order submitted! You will receive a confirmation email soon.</h1>"
+
+# 🔥 THIS IS ESSENTIAL FOR RENDER
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
