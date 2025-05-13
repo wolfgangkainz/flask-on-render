@@ -1,5 +1,6 @@
 import os
 import smtplib
+from email.mime.text import MIMEText
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -10,33 +11,44 @@ def home():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    name = request.form.get("name")
-    email = request.form.get("email")
-    products = request.form.getlist("products")
-    quantity = request.form.get("quantity")
+    name = request.form['name']
+    customer_email = request.form['email']
+    product = request.form['product']
+    quantity = int(request.form['quantity'])
 
-    message = f"""\ 
-Subject: New Fertilizer Order from {name}
+    # Extract price from product string
+    product_name, price_str = product.rsplit(" - $", 1)
+    price = float(price_str)
+    total = price * quantity
 
-Name: {name}
-Email: {email}
-Selected Products: {', '.join(products)}
-Quantity: {quantity} bag(s)
+    # Compose email content
+    body = f"""\
+New Order from Kasi's Bio Fertili
+
+Customer Name: {name}
+Customer Email: {customer_email}
+
+Order:
+{quantity} bags of {product_name}
+Unit Price: ${price:.2f}
+Total Amount: ${total:.2f}
 """
 
-    # Send the email
+    msg = MIMEText(body)
+    msg['Subject'] = f"Fertilizer Order from {name}"
+    msg['From'] = os.environ["EMAIL_USER"]
+    msg['To'] = "wkainzat@gmail.com"  # 🔁 Updated recipient address here
+
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
         server.login(os.environ["EMAIL_USER"], os.environ["EMAIL_PASS"])
-        server.sendmail(os.environ["EMAIL_USER"], "wkainz@gmail.com", message)
+        server.send_message(msg)
         server.quit()
+        return "<h1>Order submitted! Thank you.</h1>"
     except Exception as e:
         return f"<h1>Error sending email: {str(e)}</h1>"
 
-    return "<h1>Order submitted! You will receive a confirmation email soon.</h1>"
-
-# 🔥 THIS IS ESSENTIAL FOR RENDER
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
